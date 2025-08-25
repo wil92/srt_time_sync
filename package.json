@@ -1,0 +1,29 @@
+{
+  "name": "srt_time_sync",
+  "version": "1.0.0",
+  "description": "A web application for adjusting and synchronizing timestamps in SRT subtitle files.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.13.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wil92/srt_time_sync.git"
+  },
+  "keywords": [
+    "srt"
+  ],
+  "author": "Guillermo",
+  "license": "LGPL-2.1",
+  "bugs": {
+    "url": "https://github.com/wil92/srt_time_sync/issues"
+  },
+  "homepage": "https://github.com/wil92/srt_time_sync#readme"
+}
