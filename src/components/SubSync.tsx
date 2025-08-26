@@ -93,11 +93,10 @@ export function SubSync({}) {
                         </div>
                         <div>{toTimeString(sub.start)} - {toTimeString(sub.end)}</div>
                         <div>
-                            {sub.text.map((line, index) => (
-                                <input className="border w-full"
-                                       readOnly={true}
-                                       key={index}
-                                       value={line}/>))}
+                            <textarea readOnly={true}
+                                      className="border w-full h-15">
+                                {sub.text.join('\n')}
+                            </textarea>
                         </div>
                     </div>
                 ))
