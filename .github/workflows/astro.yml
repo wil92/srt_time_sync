@@ -71,7 +71,7 @@ jobs:
       - name: Deploy project with docker in hosting
         uses: garygrossgarten/github-action-ssh@release
         with:
-          command: cd ${{ secrets.REMOTE_TARGET }} && PORT_CV=${{ secrets.PORT_SRT }} docker-compose up -d --build
+          command: cd ${{ secrets.REMOTE_TARGET }} && docker-compose up -d --build
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
           privateKey: ${{ secrets.SERVER_SSH_KEY}}
