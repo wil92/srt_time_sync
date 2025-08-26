@@ -14,7 +14,6 @@ export function parseId(line: string, lineNumber: number): number {
     const id = parseInt(line.trim());
     const match = line.match(/^\d+$/);
     if (isNaN(id) || !match) {
-        console.log(isNaN(id), !match, line);
         throw new Error(`Error parsing ID in line: ${lineNumber}, got "${line}"`);
     }
     return id;

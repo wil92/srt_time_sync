@@ -10,6 +10,7 @@ export function SubSync({}) {
     const [fileName, setFileName] = useState<string>('');
     const [intervalStart, setIntervalStart] = useState<number>(1);
     const [intervalEnd, setIntervalEnd] = useState<number>(1);
+    const [encoding, setEncoding] = useState<string>('utf-8');
 
     useEffect(() => {
     }, []);
@@ -22,9 +23,12 @@ export function SubSync({}) {
             const reader = new FileReader();
             reader.onload = (e) => {
                 if (e.target) {
-                    console.log(e.target.result);
                     try {
-                        const subRes = fromSRT(e.target.result as string);
+                        const uint8Array = new Uint8Array(e.target.result as ArrayBuffer);
+                        const decoder = new TextDecoder(encoding); // try 'windows-1252' if needed
+                        const text = decoder.decode(uint8Array);
+                        const subRes = fromSRT(text);
+                        // const subRes = fromSRT(e.target.result as string);
                         setSubtitles(subRes);
                         setFileName(file.name);
                         setIntervalEnd(subRes[subRes.length - 1].id);
@@ -33,7 +37,7 @@ export function SubSync({}) {
                     }
                 }
             };
-            reader.readAsText(file);
+            reader.readAsArrayBuffer(file);
         }
     };
 
@@ -93,30 +97,52 @@ export function SubSync({}) {
                         </div>
                         <div>{toTimeString(sub.start)} - {toTimeString(sub.end)}</div>
                         <div>
+                            {sub.text.length}
                             <textarea readOnly={true}
-                                      className="border w-full h-15">
-                                {sub.text.join('\n')}
-                            </textarea>
+                                      value={sub.text.join('\n')}
+                                      className="border w-full h-20"/>
                         </div>
                     </div>
                 ))
             }
         </div>
-        <div>
+        <div className="mr-2">
             <h1 className="text-2xl mb-4">{fileName}</h1>
+
+            <form className="border flex flex-col p-1">
+                <label>
+                    <input value="utf-8"
+                           className="mr-2"
+                           type="radio"
+                           checked={encoding === 'utf-8'}
+                           onChange={(e) => setEncoding(e.target.value)}
+                           name="encoding"/>
+                    utf-8
+                </label>
+                <label>
+                    <input value="windows-1252"
+                           className="mr-2"
+                           type="radio"
+                           checked={encoding === 'windows-1252'}
+                           onChange={(e) => setEncoding(e.target.value)}
+                           name="encoding"/>
+                    windows-1252
+                </label>
+            </form>
+
             <div className="flex flex-col w-50">
                 <label htmlFor="time">Time shift</label>
                 <input id="time"
                        value={timeShift}
                        onChange={(e) => setTimeShift(e.target.value)}
-                       className="border"
+                       className="border p-1"
                        type="text"/>
             </div>
             <div className="flex flex-row mt-4">
                 <div className="flex flex-col w-full mr-2 max-w-40">
                     <label htmlFor="time">Begin</label>
                     <input id="time"
-                           className="border"
+                           className="border p-1"
                            value={intervalStart}
                            onChange={(e) => setIntervalStart(Number(e.target.value))}
                            type="text"/>
@@ -124,7 +150,7 @@ export function SubSync({}) {
                 <div className="flex flex-col w-full max-w-40">
                     <label htmlFor="time">End</label>
                     <input id="time"
-                           className="border"
+                           className="border p-1"
                            value={intervalEnd}
                            onChange={(e) => setIntervalEnd(Number(e.target.value))}
                            type="text"/>
