@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 
-import {type SubLine, fromSRT, toSRT} from './Decode.ts';
+import {type SubLine, fromSRT, toSRT, toTimeString, toTimeNumber} from './Decode.ts';
 
 export function SubSync({}) {
 
@@ -8,6 +8,8 @@ export function SubSync({}) {
     const [backgroundColor, setBackgroundColor] = useState<string>('white');
     const [timeShift, setTimeShift] = useState<string>('00:00:00,000');
     const [fileName, setFileName] = useState<string>('');
+    const [intervalStart, setIntervalStart] = useState<number>(1);
+    const [intervalEnd, setIntervalEnd] = useState<number>(1);
 
     useEffect(() => {
     }, []);
@@ -15,15 +17,17 @@ export function SubSync({}) {
     const fileDropped = (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
         setBackgroundColor('white');
-        console.log('File dropped', event);
         if (event.dataTransfer && event.dataTransfer.files.length > 0) {
             const file = event.dataTransfer.files[0];
             const reader = new FileReader();
             reader.onload = (e) => {
                 if (e.target) {
+                    console.log(e.target.result);
                     try {
-                        setSubtitles(fromSRT(e.target.result as string));
+                        const subRes = fromSRT(e.target.result as string);
+                        setSubtitles(subRes);
                         setFileName(file.name);
+                        setIntervalEnd(subRes[subRes.length - 1].id);
                     } catch (e) {
                         console.error(e);
                     }
@@ -55,7 +59,15 @@ export function SubSync({}) {
 
     // Handle time shift
     const timeshift = () => {
-        console.log('asdfasdf')
+        const timeShiftValue = toTimeNumber(timeShift);
+
+        for (let i = 0; i < subtitles.length; i++) {
+            if (subtitles[i].id >= intervalStart && subtitles[i].id <= intervalEnd) {
+                subtitles[i].start += timeShiftValue;
+                subtitles[i].end += timeShiftValue;
+            }
+        }
+        setSubtitles([...subtitles]);
     }
 
     return (<div className="flex flex-row">
@@ -69,7 +81,7 @@ export function SubSync({}) {
                     <div key={sub.id}
                          className="border m-2 p-2">
                         <div>{sub.id}</div>
-                        <div>{sub.start} - {sub.end}</div>
+                        <div>{toTimeString(sub.start)} - {toTimeString(sub.end)}</div>
                         <div>
                             {sub.text.map((line, index) => (
                                 <input className="border w-full"
@@ -82,21 +94,43 @@ export function SubSync({}) {
             }
         </div>
         <div>
-            <h2>{fileName}</h2>
+            <h1 className="text-2xl mb-4">{fileName}</h1>
             <div className="flex flex-col w-50">
                 <label htmlFor="time">Time shift</label>
                 <input id="time"
+                       value={timeShift}
+                       onChange={(e) => setTimeShift(e.target.value)}
                        className="border"
                        type="text"/>
             </div>
-            <button className="border"
-                    onClick={timeshift}>
-                Sync!!!
-            </button>
-            <button className="border"
-                    onClick={saveFile}>
-                Save
-            </button>
+            <div className="flex flex-row">
+                <div className="flex flex-col w-full mr-2 max-w-40">
+                    <label htmlFor="time">Begin</label>
+                    <input id="time"
+                           className="border"
+                           value={intervalStart}
+                           onChange={(e) => setIntervalStart(Number(e.target.value))}
+                           type="text"/>
+                </div>
+                <div className="flex flex-col w-full max-w-40">
+                    <label htmlFor="time">End</label>
+                    <input id="time"
+                           className="border"
+                           value={intervalEnd}
+                           onChange={(e) => setIntervalEnd(Number(e.target.value))}
+                           type="text"/>
+                </div>
+            </div>
+            <div className="mt-4">
+                <button className="border mr-2"
+                        onClick={timeshift}>
+                    Sync!!!
+                </button>
+                <button className="border"
+                        onClick={saveFile}>
+                    Save
+                </button>
+            </div>
         </div>
     </div>);
 }
