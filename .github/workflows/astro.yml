@@ -69,9 +69,12 @@ jobs:
           TARGET: ${{ secrets.REMOTE_TARGET }}
 
       - name: Deploy project with docker in hosting
-        uses: garygrossgarten/github-action-ssh@release
+        uses: appleboy/ssh-action@v1
         with:
-          command: cd ${{ secrets.REMOTE_TARGET }} && docker-compose up -d --build
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
-          privateKey: ${{ secrets.SERVER_SSH_KEY}}
+          key: ${{ secrets.SERVER_SSH_KEY}}
+          script: |
+            cd ${{ secrets.REMOTE_TARGET }}
+            docker-compose down
+            docker-compose up -d --build
