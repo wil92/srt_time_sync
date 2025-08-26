@@ -52,7 +52,7 @@ export function SubSync({}) {
     }
 
     const saveFile = () => {
-        const blob = new Blob([toSRT(subtitles)], {type: 'text/plain'});
+        const blob = new Blob([toSRT(subtitles)], {type: 'text/plain:charset=utf-8'});
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -97,7 +97,6 @@ export function SubSync({}) {
                         </div>
                         <div>{toTimeString(sub.start)} - {toTimeString(sub.end)}</div>
                         <div>
-                            {sub.text.length}
                             <textarea readOnly={true}
                                       value={sub.text.join('\n')}
                                       className="border w-full h-20"/>
