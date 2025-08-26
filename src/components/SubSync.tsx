@@ -80,7 +80,17 @@ export function SubSync({}) {
                 subtitles.map((sub: SubLine) => (
                     <div key={sub.id}
                          className="border m-2 p-2">
-                        <div>{sub.id}</div>
+                        <div className="flex flex-row justify-between">
+                            {sub.id}
+                            <div className="text-xs">
+                                <button className="border mr-2 p-1"
+                                        onClick={() => setIntervalStart(sub.id)}>BEGIN
+                                </button>
+                                <button className="border p-1"
+                                        onClick={() => setIntervalEnd(sub.id)}>END
+                                </button>
+                            </div>
+                        </div>
                         <div>{toTimeString(sub.start)} - {toTimeString(sub.end)}</div>
                         <div>
                             {sub.text.map((line, index) => (
@@ -103,7 +113,7 @@ export function SubSync({}) {
                        className="border"
                        type="text"/>
             </div>
-            <div className="flex flex-row">
+            <div className="flex flex-row mt-4">
                 <div className="flex flex-col w-full mr-2 max-w-40">
                     <label htmlFor="time">Begin</label>
                     <input id="time"
@@ -122,11 +132,11 @@ export function SubSync({}) {
                 </div>
             </div>
             <div className="mt-4">
-                <button className="border mr-2"
+                <button className="border mr-2 p-1"
                         onClick={timeshift}>
                     Sync!!!
                 </button>
-                <button className="border"
+                <button className="border p-1"
                         onClick={saveFile}>
                     Save
                 </button>
